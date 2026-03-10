@@ -335,3 +335,4 @@ VkPipelineShaderStageCreateInfo vkinit::pipeline_shader_stage_create_info(VkShad
     info.pName = entry;
     return info;
 }
+

@@ -46,6 +46,12 @@ public:
 	};
 	static const unsigned int FRAME_OVERLAP = 2;
 
+	struct ComputePushConstants {
+		glm::vec4 data1;
+		glm::vec4 data2;
+		glm::vec4 data3;
+		glm::vec4 data4;
+	};
 	//vulkan实例创建所需变量
 	VkInstance _instance;
 	VkDebugUtilsMessengerEXT _debug_messenger;
@@ -89,6 +95,11 @@ public:
 	VkPipeline _gradientPipeline;
 	VkPipelineLayout _gradientPipelineLayout;
 
+	//immediate submit structures
+	VkFence _immFence;
+	VkCommandBuffer _immCommandBuffer;
+	VkCommandPool _immCommandPool;
+
 	//initializes everything in the engine
 	void init();
 
@@ -100,6 +111,8 @@ public:
 
 	//run main loop
 	void run();
+
+	void immediate_submit(std::function<void(VkCommandBuffer cmd)>&& function);
 
 private:
 	void init_vulkan();
@@ -116,9 +129,13 @@ private:
 	
 	void draw_background(VkCommandBuffer cmd);
 
+	void draw_imgui(VkCommandBuffer cmd, VkImageView targetImageView);
+
 	void init_descriptors();
 
 	void init_pipelines();
 
 	void init_background_pipelines();
+
+	void init_imgui();
 };
