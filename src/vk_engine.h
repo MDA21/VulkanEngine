@@ -22,6 +22,22 @@ struct DeletionQueue
 	}
 };
 
+struct ComputePushConstants {
+	glm::vec4 data1;
+	glm::vec4 data2;
+	glm::vec4 data3;
+	glm::vec4 data4;
+};
+
+struct ComputeEffect {
+	const char* name;
+
+	VkPipeline pipeline;
+	VkPipelineLayout layout;
+
+	ComputePushConstants data;
+};
+
 class VulkanEngine {
 public:
 
@@ -46,12 +62,6 @@ public:
 	};
 	static const unsigned int FRAME_OVERLAP = 2;
 
-	struct ComputePushConstants {
-		glm::vec4 data1;
-		glm::vec4 data2;
-		glm::vec4 data3;
-		glm::vec4 data4;
-	};
 	//vulkan实例创建所需变量
 	VkInstance _instance;
 	VkDebugUtilsMessengerEXT _debug_messenger;
@@ -99,6 +109,9 @@ public:
 	VkFence _immFence;
 	VkCommandBuffer _immCommandBuffer;
 	VkCommandPool _immCommandPool;
+
+	std::vector<ComputeEffect> backgroundEffects;
+	int currentBackgroundEffect{ 0 };
 
 	//initializes everything in the engine
 	void init();
