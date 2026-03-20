@@ -1,4 +1,4 @@
-﻿// vulkan_guide.h : Include file for standard system include files,
+// vulkan_guide.h : Include file for standard system include files,
 // or project specific include files.
 
 #pragma once
@@ -108,6 +108,11 @@ public:
 	VkPipelineLayout _trianglePipelineLayout;
 	VkPipeline _trianglePipeline;
 
+	VkPipelineLayout _meshPipelineLayout;
+	VkPipeline _meshPipeline;
+
+	GPUMeshBuffers rectangle;
+
 	//immediate submit structures
 	VkFence _immFence;
 	VkCommandBuffer _immCommandBuffer;
@@ -155,5 +160,15 @@ private:
 
 	void init_triangle_pipeline();
 
+	void init_mesh_pipeline();
+
 	void init_imgui();
+
+	AllocatedBuffer create_buffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+
+	void destroy_buffer(const AllocatedBuffer& buffer);
+
+	GPUMeshBuffers uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+
+	void init_default_data();
 };
