@@ -5,6 +5,7 @@
 
 #include <vk_types.h>
 #include <vk_descriptors.h>
+#include <vk_loader.h>
 
 struct DeletionQueue
 {
@@ -38,9 +39,18 @@ struct ComputeEffect {
 	ComputePushConstants data;
 };
 
+struct GPUSceneData {
+	glm::mat4 view;
+	glm::mat4 proj;
+	glm::mat4 viewproj;
+	glm::vec4 ambientColor;
+	glm::vec4 sunlightDirection; // w for sun power
+	glm::vec4 sunlightColor;
+};
+
 class VulkanEngine {
 public:
-
+	bool resize_requested{false};
 	bool _isInitialized{ false };
 	int _frameNumber {0};
 	bool stop_rendering{ false };
@@ -59,6 +69,7 @@ public:
 		VkFence _renderFence;
 
 		DeletionQueue _deletionQueue;
+		DescriptorAllocatorGrowable _frameDescriptors;
 	};
 	static const unsigned int FRAME_OVERLAP = 2;
 
@@ -93,7 +104,9 @@ public:
 	VmaAllocator _allocator;
 
 	AllocatedImage _drawImage;
+	AllocatedImage _depthImage;
 	VkExtent2D _drawExtent;
+	float renderScale = 1.f;
 
 	//descriptor
 	DescriptorAllocator globalDescriptorAllocator;
@@ -121,6 +134,11 @@ public:
 	std::vector<ComputeEffect> backgroundEffects;
 	int currentBackgroundEffect{ 0 };
 
+	std::vector<std::shared_ptr<MeshAsset>> testMeshes;
+
+	GPUSceneData sceneData;
+	VkDescriptorSetLayout _gpuSceneDataDescriptorLayout;
+
 	//initializes everything in the engine
 	void init();
 
@@ -134,6 +152,10 @@ public:
 	void run();
 
 	void immediate_submit(std::function<void(VkCommandBuffer cmd)>&& function);
+
+	GPUMeshBuffers uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+
+	void resize_swapchain();
 
 private:
 	void init_vulkan();
@@ -168,7 +190,7 @@ private:
 
 	void destroy_buffer(const AllocatedBuffer& buffer);
 
-	GPUMeshBuffers uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+
 
 	void init_default_data();
 };
